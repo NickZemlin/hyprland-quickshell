@@ -2,7 +2,6 @@ import QtQuick
 import Quickshell.Hyprland
 import "root:/Globals" as Globals
 import "root:/Services" as Services
-import "." // Import current directory to access WorkspaceWrapper
 
 Rectangle {
     id: workspacesRoot
