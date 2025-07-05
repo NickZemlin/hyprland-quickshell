@@ -3,6 +3,7 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Widgets
 import "root:/Globals" as Globals
+import "root:/Services" as Services
 
 Rectangle {
     id: root
@@ -23,7 +24,8 @@ Rectangle {
             return name && name.length > 0;
         });
         for (var i = 0; i < iconNames.length; i++) {
-            const path = Quickshell.iconPath(iconNames[i], true);
+            const path = Quickshell.iconPath(Services.AppSearch.guessIcon(iconNames[i]), true);
+
             if (path && path !== "")
                 return path;
 
