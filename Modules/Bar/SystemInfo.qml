@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import "root:/Globals" as Globals
+import "root:/Services" as Services
 
 Row {
     id: ramInfo
@@ -21,7 +22,13 @@ Row {
 
     }
 
-    spacing: 8
+    spacing: {
+        let gapsIs = Services.HyprlandData.config.general?.gaps_in
+        if (gapsIs) {
+            return gapsIs.split(",")[0]
+        }
+        return 5
+    }
 
     // RAM Block
     SystemInfoBlock {

@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell
 
 import "root:/Globals" as Globals
+import "root:/Services" as Services
 
 Scope {
     id: bar
@@ -16,23 +17,46 @@ Scope {
         }
 
         margins {
-            top: 5 // TODO: read hyperland config gaps_out and divide by 2 ?
+            top: {
+                let gapsIs = Services.HyprlandData.config.general?.gaps_in
+                if (gapsIs) {
+                    return gapsIs.split(",")[0]
+                }
+                return 5
+            }
         }
 
         Workspaces {
             anchors {
-                verticalCenter: parent.verticalCenter
+                bottom: parent.bottom
                 horizontalCenter: parent.horizontalCenter
             }
         }
 
         Row {
-            spacing: 8
+            spacing: {
+                let gapsIs = Services.HyprlandData.config.general?.gaps_in
+                if (gapsIs) {
+                    return gapsIs.split(",")[0]
+                }
+                return 5
+            }
 
             anchors {
                 right: parent.right
-                verticalCenter: parent.verticalCenter
-                rightMargin: 20 // TODO: read hyprland config
+                bottom: parent.bottom
+                rightMargin: {
+                    let gapsOut = Services.HyprlandData.config.general?.gaps_out
+                    if (gapsOut){
+                        let toSplit = gapsOut.split(',')
+                        if ([2,3,4].includes(toSplit.length)){
+                            return toSplit[1]
+                        }
+                        return toSplit[0]
+                    }
+                    return 20
+                }
+
             }
 
             SystemInfo {}

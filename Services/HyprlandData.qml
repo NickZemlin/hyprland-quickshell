@@ -16,6 +16,7 @@ Singleton {
     property var workspaces: []
     property var activeWorkspace: ({id: -1})  // Initialize with default
     property var workspaceById: ({})
+    property var config: ({})
 
     function updateWindowList() {
         getClients.running = true;
@@ -30,6 +31,10 @@ Singleton {
         getWorkspaces.running = true;
         getActiveWorkspace.running = true;
     }
+    
+    function updateConfig() {
+        getConfig.running = true;
+    }
 
     function updateAll() {
         updateWindowList();
@@ -39,7 +44,7 @@ Singleton {
 
     Component.onCompleted: {
         updateAll();
-        // Set up periodic refresh as backup
+        updateConfig();
         refreshTimer.start();
     }
 
@@ -76,6 +81,11 @@ Singleton {
                 event.name === "workspacev2") {
                 root.updateWorkspaces();
             }
+            
+            // Update config on reload event
+            if (event.name === "configreloaded") {
+                root.updateConfig();
+            }
         }
     }
 
@@ -100,7 +110,7 @@ Singleton {
         }
     }
 
-    Process {
+Process {
         id: getMonitors
         command: ["bash", "-c", "hyprctl monitors -j | jq -c"]
         stdout: SplitParser {
@@ -113,7 +123,7 @@ Singleton {
             }
         }
     }
-
+    
     Process {
         id: getLayers
         command: ["bash", "-c", "hyprctl layers -j | jq -c"]
@@ -127,7 +137,8 @@ Singleton {
             }
         }
     }
-Process {
+    
+    Process {
         id: getWorkspaces
         command: ["bash", "-c", "hyprctl workspaces -j | jq -c"]
         stdout: SplitParser {
@@ -147,7 +158,7 @@ Process {
         }
     }
 
-    Process {
+Process {
         id: getActiveWorkspace
         command: ["bash", "-c", "hyprctl activeworkspace -j | jq -c"]
         stdout: SplitParser {
@@ -160,4 +171,95 @@ Process {
             }
         }
     }
+    
+Process {
+    id: getConfig
+    property string fullConfig: ""
+    property bool isRunning: false
+    
+    command: ["bash", "-c", "cat ~/.config/hypr/hyprland.conf"]
+    
+    onRunningChanged: {
+        if (isRunning && !running) {
+            try {
+                let configData = parseHyprlandConfig(fullConfig);
+                root.config = configData;
+                
+                fullConfig = "";
+            } catch (e) {
+                console.error("Error parsing hyprland config:", e);
+                fullConfig = "";
+            }
+            isRunning = false;
+        } else if (running) {
+            isRunning = true;
+            fullConfig = ""; 
+        }
+    }
+    
+    stdout: SplitParser {
+        onRead: data => {
+            getConfig.fullConfig += data + "\n";
+        }
+    }
+    
+    function parseHyprlandConfig(data) {
+        let configSections = {};
+        let currentSection = null;
+        let sectionContent = {};
+        let inSection = false;
+        
+        const lines = data.split('\n');
+        
+        for (let line of lines) {
+            line = line.trim();
+            
+            if (line === '' || line.startsWith('#')) {
+                continue;
+            }
+            
+            const sectionMatch = line.match(/^(\w+)\s*{$/);
+            if (sectionMatch) {
+                if (currentSection) {
+                    configSections[currentSection] = sectionContent;
+                }
+                
+                currentSection = sectionMatch[1];
+                sectionContent = {};
+                inSection = true;
+                continue;
+            }
+            
+            if (line === '}' && inSection) {
+                configSections[currentSection] = sectionContent;
+                currentSection = null;
+                sectionContent = {};
+                inSection = false;
+                continue;
+            }
+            
+            if (inSection) {
+                const keyValueMatch = line.match(/^([^=]+)=(.*)$/);
+                if (keyValueMatch) {
+                    const key = keyValueMatch[1].trim();
+                    const value = keyValueMatch[2].trim();
+                    sectionContent[key] = value;
+                } else {
+                    const spaceKeyValueMatch = line.match(/^([^\s]+)\s+(.+)$/);
+                    if (spaceKeyValueMatch) {
+                        const key = spaceKeyValueMatch[1].trim();
+                        const value = spaceKeyValueMatch[2].trim();
+                        sectionContent[key] = value;
+                    }
+                }
+            }
+        }
+        
+        if (currentSection) {
+            configSections[currentSection] = sectionContent;
+        }
+        
+        return configSections;
+    }
+}
 }

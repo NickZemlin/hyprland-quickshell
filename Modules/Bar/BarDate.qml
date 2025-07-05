@@ -17,6 +17,7 @@ Rectangle {
 
             PropertyChanges {
                 target: rect
+                border.color: Globals.Colors.barElementHoveredBorderColor
             }
 
         },

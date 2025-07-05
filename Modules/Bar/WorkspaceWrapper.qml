@@ -52,6 +52,17 @@ Rectangle {
 
         },
         State {
+            name: "hovered"
+            when: !root.isActive && mouseArea.containsMouse
+
+            PropertyChanges {
+                target: root
+                border.color: Globals.Colors.barElementHoveredBorderColor
+                color: Globals.Colors.workspaceInactive
+            }
+
+        },
+        State {
             name: "initialized"
             when: root.isInitialized && !root.isActive
 
@@ -106,8 +117,10 @@ Rectangle {
     border {
         width: Globals.Sizes.borderWidth
         color: {
-            if (isActive) return Globals.Colors.barElementActiveBorderColor
-            return Globals.Colors.barElementBorderColor
+            if (isActive)
+                return Globals.Colors.barElementActiveBorderColor;
+
+            return Globals.Colors.barElementBorderColor;
         }
     }
 
@@ -134,6 +147,7 @@ Rectangle {
 
                 Image {
                     id: iconImage
+
                     anchors.fill: parent
                     source: iconSource
                     sourceSize.width: 22 * 1.3
