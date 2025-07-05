@@ -59,6 +59,8 @@ Row {
                 requestPaint();
             }
 
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.verticalCenterOffset: -Globals.Sizes.borderWidth
             implicitWidth: 100
             onPaint: {
                 var ctx = getContext("2d");

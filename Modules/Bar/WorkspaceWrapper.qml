@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import Quickshell.Widgets
 import "root:/Globals" as Globals
 
 Rectangle {
@@ -22,7 +23,7 @@ Rectangle {
             return name && name.length > 0;
         });
         for (var i = 0; i < iconNames.length; i++) {
-            const path = Quickshell.iconPath(iconNames[i], "");
+            const path = Quickshell.iconPath(iconNames[i], true);
             if (path && path !== "")
                 return path;
 
@@ -32,7 +33,7 @@ Rectangle {
 
     width: Math.max(row.implicitWidth, minWidth)
     height: Globals.Sizes.barBlockHeihgt
-    radius: 6
+    radius: Globals.Sizes.radius
     clip: true
     states: [
         State {
@@ -102,6 +103,14 @@ Rectangle {
         }
     ]
 
+    border {
+        width: Globals.Sizes.borderWidth
+        color: {
+            if (isActive) return Globals.Colors.barElementActiveBorderColor
+            return Globals.Colors.barElementBorderColor
+        }
+    }
+
     Row {
         id: row
 
@@ -114,25 +123,33 @@ Rectangle {
             id: iconContainer
 
             anchors.verticalCenter: parent.verticalCenter
-            width: 24
-            height: 24
+            width: 22
+            height: 22
 
-            Image {
-                id: iconImage
+            ClippingWrapperRectangle {
+                width: iconContainer.width
+                height: iconContainer.height
+                radius: 8
+                color: "transparent"
 
-                anchors.fill: parent
-                source: iconSource
-                sourceSize.width: 50
-                sourceSize.height: 50
-                smooth: true
-                antialiasing: true
-                visible: status === Image.Ready && source !== ""
-                fillMode: Image.PreserveAspectFit
+                Image {
+                    id: iconImage
+                    anchors.fill: parent
+                    source: iconSource
+                    sourceSize.width: 22 * 1.3
+                    sourceSize.height: 22 * 1.3
+                    smooth: true
+                    antialiasing: true
+                    visible: status === Image.Ready && source !== ""
+                    fillMode: Image.PreserveAspectFit
+                }
+
             }
 
             Rectangle {
                 id: fallbackRect
 
+                anchors.margins: Globals.Sizes.borderWidth
                 anchors.fill: parent
                 radius: 6
                 visible: !iconImage.visible
@@ -164,7 +181,6 @@ Rectangle {
                 height: width
                 color: isActive ? Globals.Colors.workspaceDotActive : Globals.Colors.workspaceDotInactive
                 radius: width / 2
-
             }
 
         }

@@ -6,15 +6,17 @@ import "root:/Globals" as Globals
 Scope {
     id: bar
 
-    property int barHeight: Globals.Sizes.barHeight
-
     PanelWindow {
-        implicitHeight: bar.barHeight
-
+        color: 'transparent'
+        implicitHeight: Globals.Sizes.barHeight
         anchors {
-            top: true
+            top: true 
             left: true
             right: true
+        }
+
+        margins {
+            top: 5 // TODO: read hyperland config gaps_out and divide by 2 ?
         }
 
         Workspaces {
@@ -30,7 +32,7 @@ Scope {
             anchors {
                 right: parent.right
                 verticalCenter: parent.verticalCenter
-                rightMargin: 10
+                rightMargin: 20 // TODO: read hyprland config
             }
 
             SystemInfo {}

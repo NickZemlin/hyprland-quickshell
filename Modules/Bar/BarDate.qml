@@ -1,13 +1,13 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
-
-import "root:/Globals" as Globals 
+import "root:/Globals" as Globals
 
 Rectangle {
     id: rect
 
-    radius: 4
+    color: Globals.Colors.barElementBackgroundColor
+    radius: Globals.Sizes.radius
     implicitWidth: row.implicitWidth + row.padding * 2
     implicitHeight: Globals.Sizes.barBlockHeihgt
     states: [
@@ -17,7 +17,6 @@ Rectangle {
 
             PropertyChanges {
                 target: rect
-                color: Globals.Colors.barElementHovered
             }
 
         },
@@ -27,7 +26,6 @@ Rectangle {
 
             PropertyChanges {
                 target: rect
-                color: Globals.Colors.barElementBackground
             }
 
         }
@@ -55,6 +53,11 @@ Rectangle {
         }
     ]
 
+    border {
+        width: Globals.Sizes.borderWidth
+        color: Globals.Colors.barElementBorderColor
+    }
+
     Row {
         id: row
 
@@ -67,6 +70,7 @@ Rectangle {
             font.weight: Font.Bold
             font.pixelSize: 14
             text: Qt.formatDateTime(clock.date, "hh:mm")
+            color: Globals.Colors.barElementTextColor
         }
 
         Text {
@@ -74,6 +78,7 @@ Rectangle {
             font.weight: Font.Bold
             font.pixelSize: 14
             text: "|"
+            color: Globals.Colors.barElementTextColor
         }
 
         Text {
@@ -81,6 +86,7 @@ Rectangle {
             font.weight: Font.Bold
             font.pixelSize: 14
             text: Qt.formatDateTime(clock.date, "dd MMM")
+            color: Globals.Colors.barElementTextColor
         }
 
         HoverHandler {
