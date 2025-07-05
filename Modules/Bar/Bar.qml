@@ -22,7 +22,6 @@ Scope {
                 verticalCenter: parent.verticalCenter
                 horizontalCenter: parent.horizontalCenter
             }
-
         }
 
         Row {
@@ -34,14 +33,9 @@ Scope {
                 rightMargin: 10
             }
 
-            SystemInfo {
-            }
+            SystemInfo {}
 
-            BarDate {
-            }
-
+            BarDate {}
         }
-
     }
-
 }
