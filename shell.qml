@@ -1,5 +1,3 @@
-import QtQuick
-import QtQuick.Layouts
 import Quickshell
 
 import "root:/Modules/Bar" as Modules

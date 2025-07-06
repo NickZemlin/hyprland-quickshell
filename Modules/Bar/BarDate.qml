@@ -7,7 +7,7 @@ Rectangle {
     id: rect
 
     color: Globals.Colors.barElementBackgroundColor
-    radius: Globals.Sizes.radius
+    radius: Globals.Sizes.borderRadius
     implicitWidth: row.implicitWidth + row.padding * 2
     implicitHeight: Globals.Sizes.barBlockHeihgt
     states: [
@@ -19,7 +19,6 @@ Rectangle {
                 target: rect
                 border.color: Globals.Colors.barElementHoveredBorderColor
             }
-
         },
         State {
             name: "default"
@@ -28,7 +27,6 @@ Rectangle {
             PropertyChanges {
                 target: rect
             }
-
         }
     ]
     transitions: [
