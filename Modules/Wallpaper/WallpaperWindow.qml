@@ -12,7 +12,7 @@ Scope {
     PanelWindow {
         exclusionMode: ExclusionMode.Ignore
         aboveWindows: false
-        color: 'red'
+        color: 'transparent'
 
         anchors {
             top: true
@@ -23,19 +23,19 @@ Scope {
 
         Rectangle {
             id: wallpaperWrapper
-
+            visible: !!Services.WallpaperService.currentWallpaper?.path
+            color: transparent
             x: -paralaxOffset
             height: parent.height
             width: parent.width + paralaxOffset
 
             Image {
-                source: Services.WallpaperService.currentWallpaper.path ?? ""
+                source: Services.WallpaperService.currentWallpaper?.path ?? ""
                 fillMode: Image.PreserveAspectCrop
                 anchors.verticalCenter: parent.verticalCenter
                 x: -paralaxOffset * Services.HyprlandData.activeWorkspace.id
                 height: parent.height
                 width: parent.width + paralaxOffset * 10
-
                 Behavior on x {
                     NumberAnimation {
                         duration: animationDuration

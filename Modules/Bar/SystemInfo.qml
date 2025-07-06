@@ -32,6 +32,7 @@ Row {
 
     // Swap Block
     SystemInfoBlock {
+        visible: ramInfo.swapUsed
         iconText: "󰯎"
         mainText: `${ramInfo.swapUsed.toFixed(1)} GB`
     }
