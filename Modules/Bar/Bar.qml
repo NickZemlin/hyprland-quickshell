@@ -17,7 +17,7 @@ Scope {
         }
 
         margins {
-            top: Globals.Sizes.gapsIn
+            top: 2
         }
 
         Workspaces {
@@ -33,8 +33,7 @@ Scope {
             anchors {
                 right: parent.right
                 bottom: parent.bottom
-                rightMargin: Globals.Sizes.gapsOut
-
+                rightMargin: Globals.Sizes.gapsOutHorizontal
             }
 
             SystemInfo {}

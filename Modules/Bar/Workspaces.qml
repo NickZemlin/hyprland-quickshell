@@ -13,7 +13,7 @@ Rectangle {
 
     Row {
         id: row
-        spacing: Globals.Sizes.gapsOut / 2
+        spacing: Globals.Sizes.gapsOutHorizontal / 2
         anchors.centerIn: parent
         
         Repeater {
