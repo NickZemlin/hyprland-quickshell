@@ -16,7 +16,7 @@ Singleton {
     property var workspaces: []
     property var activeWorkspace: ({id: -1})  // Initialize with default
     property var workspaceById: ({})
-    property var config: ({})
+    property var config: Config {}
 
     function updateWindowList() {
         getClients.running = true;
@@ -33,7 +33,7 @@ Singleton {
     }
     
     function updateConfig() {
-        getConfig.running = true;
+        configParser.running = true;
     }
 
     function updateAll() {
@@ -110,7 +110,7 @@ Singleton {
         }
     }
 
-Process {
+    Process {
         id: getMonitors
         command: ["bash", "-c", "hyprctl monitors -j | jq -c"]
         stdout: SplitParser {
@@ -158,7 +158,7 @@ Process {
         }
     }
 
-Process {
+    Process {
         id: getActiveWorkspace
         command: ["bash", "-c", "hyprctl activeworkspace -j | jq -c"]
         stdout: SplitParser {
@@ -171,95 +171,54 @@ Process {
             }
         }
     }
-    
-Process {
-    id: getConfig
-    property string fullConfig: ""
-    property bool isRunning: false
-    
-    command: ["bash", "-c", "cat ~/.config/hypr/hyprland.conf"]
-    
-    onRunningChanged: {
-        if (isRunning && !running) {
-            try {
-                let configData = parseHyprlandConfig(fullConfig);
-                root.config = configData;
-                
-                fullConfig = "";
-            } catch (e) {
-                console.error("Error parsing hyprland config:", e);
-                fullConfig = "";
-            }
-            isRunning = false;
-        } else if (running) {
-            isRunning = true;
-            fullConfig = ""; 
-        }
+
+    component Config: QtObject {
+        property var gapsIn: null
+        property var gapsOut: null
+        property var borderSize: null
+        property var borderRadius: null
+
+        property var activeBorderColor: null
+        property var inactiveBorderColor: null
     }
-    
-    stdout: SplitParser {
-        onRead: data => {
-            getConfig.fullConfig += data + "\n";
+
+    Process {
+        id: configParser
+
+        property var options: {
+            "general:gaps_in": "gapsIn",
+            "general:gaps_out": "gapsOut",
+            "general:border_size": "borderSize",
+            "decoration:rounding": "borderRadius",
+            "general:col.active_border": "activeBorderColor",
+            "general:col.inactive_border": "inactiveBorderColor",
         }
-    }
-    
-    function parseHyprlandConfig(data) {
-        let configSections = {};
-        let currentSection = null;
-        let sectionContent = {};
-        let inSection = false;
-        
-        const lines = data.split('\n');
-        
-        for (let line of lines) {
-            line = line.trim();
-            
-            if (line === '' || line.startsWith('#')) {
-                continue;
-            }
-            
-            const sectionMatch = line.match(/^(\w+)\s*{$/);
-            if (sectionMatch) {
-                if (currentSection) {
-                    configSections[currentSection] = sectionContent;
+
+        command: ["hyprctl", "--batch", "-j", Object.keys(options).map((x) => `getoption ${x}`).join(";")]
+
+        stdout: SplitParser {
+            onRead: data => {
+                let content = data.trim()
+                if (content == '') {
+                    return
                 }
-                
-                currentSection = sectionMatch[1];
-                sectionContent = {};
-                inSection = true;
-                continue;
-            }
-            
-            if (line === '}' && inSection) {
-                configSections[currentSection] = sectionContent;
-                currentSection = null;
-                sectionContent = {};
-                inSection = false;
-                continue;
-            }
-            
-            if (inSection) {
-                const keyValueMatch = line.match(/^([^=]+)=(.*)$/);
-                if (keyValueMatch) {
-                    const key = keyValueMatch[1].trim();
-                    const value = keyValueMatch[2].trim();
-                    sectionContent[key] = value;
-                } else {
-                    const spaceKeyValueMatch = line.match(/^([^\s]+)\s+(.+)$/);
-                    if (spaceKeyValueMatch) {
-                        const key = spaceKeyValueMatch[1].trim();
-                        const value = spaceKeyValueMatch[2].trim();
-                        sectionContent[key] = value;
+
+                let parsed = JSON.parse(content);
+                let entry = configParser.options[parsed['option']]
+
+                if (parsed.set) {
+                    if ('int' in parsed) {
+                        root.config[entry] = parsed.int
+                    } else if ('custom' in parsed) {
+                        root.config[entry] = parsed.custom.split(' ')
+                    } else {
+                        console.error(`Invalid option response: ${content}`)
                     }
+                } else {
+                    root.config[entry] = null
                 }
             }
         }
-        
-        if (currentSection) {
-            configSections[currentSection] = sectionContent;
-        }
-        
-        return configSections;
     }
 }
-}
+

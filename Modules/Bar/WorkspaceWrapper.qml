@@ -35,7 +35,7 @@ Rectangle {
 
     width: Math.max(row.implicitWidth, minWidth)
     height: Globals.Sizes.barBlockHeihgt
-    radius: Globals.Sizes.radius
+    radius: Globals.Sizes.borderRadius
     clip: true
     states: [
         State {

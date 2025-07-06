@@ -17,13 +17,7 @@ Scope {
         }
 
         margins {
-            top: {
-                let gapsIs = Services.HyprlandData.config.general?.gaps_in
-                if (gapsIs) {
-                    return gapsIs.split(",")[0]
-                }
-                return 5
-            }
+            top: Globals.Sizes.gapsIn
         }
 
         Workspaces {
@@ -34,28 +28,12 @@ Scope {
         }
 
         Row {
-            spacing: {
-                let gapsIs = Services.HyprlandData.config.general?.gaps_in
-                if (gapsIs) {
-                    return gapsIs.split(",")[0]
-                }
-                return 5
-            }
+            spacing: Globals.Sizes.gapsIn
 
             anchors {
                 right: parent.right
                 bottom: parent.bottom
-                rightMargin: {
-                    let gapsOut = Services.HyprlandData.config.general?.gaps_out
-                    if (gapsOut){
-                        let toSplit = gapsOut.split(',')
-                        if ([2,3,4].includes(toSplit.length)){
-                            return toSplit[1]
-                        }
-                        return toSplit[0]
-                    }
-                    return 20
-                }
+                rightMargin: Globals.Sizes.gapsOut
 
             }
 

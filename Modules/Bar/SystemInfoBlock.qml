@@ -10,7 +10,7 @@ Rectangle {
     property Component customView: null
     property alias customItem: customViewLoader.item
 
-    radius: Globals.Sizes.radius
+    radius: Globals.Sizes.borderRadius
     implicitWidth: contentRow.implicitWidth + (contentRow.leftPadding + contentRow.rightPadding)
     implicitHeight: Globals.Sizes.barBlockHeihgt
     color: Globals.Colors.barElementBackgroundColor

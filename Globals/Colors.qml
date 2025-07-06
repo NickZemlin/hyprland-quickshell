@@ -38,22 +38,16 @@ Singleton {
     readonly property color cpuChartFillColor: surface2
     readonly property color barElementBackgroundColor: surface0
     readonly property color barElementBorderColor: {
-        if (Services.HyprlandData.config && Services.HyprlandData.config.general && Services.HyprlandData.config.general['col.inactive_border']) {
-            let activeColor = Services.HyprlandData.config.general['col.inactive_border'].split(" ")[0];
-            if (activeColor)
-                return String(Helpers.hyprLandColorToQtColor(activeColor, true));
-
+        if (Services.HyprlandData.config.inactiveBorderColor != null) {
+            return "#" + Services.HyprlandData.config.inactiveBorderColor[0]
         }
-        return text;
+        return text
     }
     readonly property color barElementActiveBorderColor: {
-        if (Services.HyprlandData.config && Services.HyprlandData.config.general && Services.HyprlandData.config.general['col.active_border']) {
-            let activeColor = Services.HyprlandData.config.general['col.active_border'].split(" ")[0];
-            if (activeColor)
-                return String(Helpers.hyprLandColorToQtColor(activeColor, true));
-
+        if (Services.HyprlandData.config.activeBorderColor != null) {
+            return "#" + Services.HyprlandData.config.activeBorderColor[0]
         }
-        return maroon;
+        return maroon
     }
     readonly property color barElementHoveredBorderColor: {
         return Helpers.mix(barElementBorderColor, barElementActiveBorderColor, 0.7);

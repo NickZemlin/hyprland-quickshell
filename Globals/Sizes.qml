@@ -1,5 +1,4 @@
 pragma Singleton
-import QtQuick
 import Quickshell
 import "root:/Services" as Services
 
@@ -8,21 +7,10 @@ Singleton {
     readonly property int barBlockHeihgt: barHeight - 2
     readonly property int barItemInnerPadding: 4
 
-    readonly property int borderWidth: {
-        let borderSize = Services.HyprlandData.config.general?.border_size
-        if (borderSize) {
-            return borderSize
-        }
-        return 2
-    }
-
-    readonly property int radius: {
-        let rounding = Services.HyprlandData.config.decoration?.rounding
-        if (rounding) {
-            return rounding
-        }
-        return 10
-    }
+    readonly property int borderWidth: Services.HyprlandData.config.borderSize ?? 2
+    readonly property int borderRadius: Services.HyprlandData.config.borderRadius ?? 10
+    readonly property int gapsIn: Services.HyprlandData.config.gapsIn?.[0] ?? 5
+    readonly property int gapsOut: Services.HyprlandData.config.gapsOut?.[0] ?? 20
 
     // workspaces
     readonly property int workspacesPadding: 6

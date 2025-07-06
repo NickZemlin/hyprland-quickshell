@@ -13,17 +13,7 @@ Rectangle {
 
     Row {
         id: row
-        spacing: {
-            let gapsOut = Services.HyprlandData.config.general?.gaps_out
-            if (gapsOut){
-                let toSplit = gapsOut.split(',')
-                if ([2,3,4].includes(toSplit.length)){
-                    return toSplit[1] / 2
-                }
-                return toSplit[0] / 2
-            }
-            return 10
-        }
+        spacing: Globals.Sizes.gapsOut / 2
         anchors.centerIn: parent
         
         Repeater {
