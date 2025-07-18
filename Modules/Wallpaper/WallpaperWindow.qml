@@ -24,7 +24,7 @@ Scope {
         Rectangle {
             id: wallpaperWrapper
             visible: !!Services.WallpaperService.currentWallpaper?.path
-            color: transparent
+            color: 'transparent'
             x: -paralaxOffset
             height: parent.height
             width: parent.width + paralaxOffset
