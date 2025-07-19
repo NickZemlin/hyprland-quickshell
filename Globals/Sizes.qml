@@ -25,4 +25,6 @@ Singleton {
     // workspaces
     readonly property int workspacesPadding: 6
     readonly property int workspacesDotSize: 6
+
+    readonly property int notificationsPanelWidth: 300
 }
