@@ -1,7 +1,6 @@
 pragma Singleton
 pragma ComponentBehavior: Bound
 
-
 import QtQuick
 import Quickshell
 import Quickshell.Services.Notifications
@@ -9,14 +8,13 @@ import Quickshell.Services.Notifications
 Singleton {
     id: root
 
-    property list<Notif> list: []
-    onListChanged: {
-        console.log("List changed. New length:", list.length);
-        console.log("Current list content:", JSON.stringify(list.map(notif => ({
-            notif
-        })), null, 2));
+    property alias list: listModel
+    
+    ListModel {
+        id: listModel
     }
-	NotificationServer {
+
+    NotificationServer {
         id: notifServer
         actionsSupported: true
         bodyHyperlinksSupported: true
@@ -29,25 +27,35 @@ Singleton {
 
         onNotification: (notification) => {
             notification.tracked = true
-            console.log(JSON.stringify(notification))
-                        const newNotifObject = notifComponent.createObject(root, {
+            // Create the notification object
+            const newNotifObject = notifComponent.createObject(root, {
                 "notificationId": notification.id,
                 "notification": notification,
                 "time": Date.now(),
             });
-			root.list = [...root.list, newNotifObject];
+
+            // Properly append to ListModel (this triggers add animation)
+            listModel.append({"notif": newNotifObject});
         }
     }
 
     function discardNotification(id) {
-        console.log("[Notifications] Discarding notification with ID: " + id);
-        const index = root.list.findIndex((notif) => notif.notificationId === id);
-        const notifServerIndex = list.findIndex((notif) => notif.id + root.idOffset === id);
-        if (index !== -1) {
-            root.list.splice(index, 1);
+        
+        // Find and remove from ListModel (this triggers remove animation)
+        for (let i = 0; i < listModel.count; i++) {
+            const item = listModel.get(i);
+            if (item.notif.notificationId === id) {
+                listModel.remove(i);
+                break;
+            }
         }
-        if (notifServerIndex !== -1) {
-            list[notifServerIndex].dismiss()
+        
+        // Handle notification server dismissal
+        if (notifServer.notifications){
+            const notifServerIndex = notifServer.notifications.findIndex((notif) => notif.id === id);
+            if (notifServerIndex !== -1) {
+                notifServer.notifications[notifServerIndex].dismiss();
+            }
         }
     }
 
@@ -68,14 +76,6 @@ Singleton {
         property double time
         property string urgency: notification?.urgency.toString() ?? "normal"
         property Timer timer
-
-        readonly property Connections conn: Connections {
-            target: wrapper.notification.Component
-
-            function onDestruction(): void {
-                wrapper.destroy();
-            }
-        }
     }
 
     Component {

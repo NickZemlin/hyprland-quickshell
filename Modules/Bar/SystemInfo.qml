@@ -44,7 +44,7 @@ Row {
 
         Behavior on width {
             NumberAnimation {
-                duration: 300
+                duration: Globals.AnimationSpeeds.mediumAnimation
                 easing.type: Easing.OutCubic
             }
 
@@ -52,7 +52,7 @@ Row {
 
         Behavior on opacity {
             NumberAnimation {
-                duration: 300
+                duration: Globals.AnimationSpeeds.mediumAnimation
                 easing.type: Easing.OutCubic
             }
 

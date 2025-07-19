@@ -7,7 +7,7 @@ Scope {
     id: wallpaperWindow
 
     property int paralaxOffset: 5
-    property int animationDuration: 200
+    property int animationDuration: Globals.AnimationSpeeds.mediumAnimation
 
     PanelWindow {
         exclusionMode: ExclusionMode.Ignore

@@ -10,7 +10,7 @@ Rectangle {
 
     property QtObject notif
     property bool notificationNull: {
-        if (notif.notification === null) {
+        if (notif.notification === null) { // TODO: fix Binding loop but keep animations
             Services.NotificationsService.discardNotification(notif.notificationId);
             return true;
         }
@@ -26,10 +26,20 @@ Rectangle {
     property string notificationBody: {
         return notif.body;
     }
+    property real progress: calculateProgress()
+    property int lifetime: 5000 // 10 seconds
 
-    implicitWidth: Globals.Sizes.notificationsPanelWidth
+    function calculateProgress() {
+        if (notificationNull)
+            return 1;
+
+        const elapsed = new Date().getTime() - notif.time;
+        return Math.min(elapsed / lifetime, 1);
+    }
+
+    implicitWidth: Globals.Sizes.notificationElementWidth
     radius: Globals.Sizes.borderRadius
-    height: column.implicitHeight + 16
+    height: column.implicitHeight + Globals.Sizes.notifProgressMargin + progressBar.height
     color: Qt.rgba(Globals.Colors.barElementBackgroundColor.r, Globals.Colors.barElementBackgroundColor.g, Globals.Colors.barElementBackgroundColor.b, 0.8)
     states: [
         State {
@@ -59,7 +69,7 @@ Rectangle {
             to: "hovered"
 
             ColorAnimation {
-                duration: 300
+                duration: Globals.AnimationSpeeds.mediumAnimation
                 easing.type: Easing.InOutQuad
             }
 
@@ -69,7 +79,7 @@ Rectangle {
             to: "default"
 
             ColorAnimation {
-                duration: 300
+                duration: Globals.AnimationSpeeds.mediumAnimation
                 easing.type: Easing.InOutQuad
             }
 
@@ -78,12 +88,48 @@ Rectangle {
 
     MouseArea {
         anchors.fill: parent
-        acceptedButtons: Qt.RightButton // Only handle right-clicks
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
         onClicked: (mouse) => {
-            if (mouse.button === Qt.RightButton) {
-                console.log("Right-clicked notification:", notif.appName + " " + notif.notificationId);
+            if (mouse.button === Qt.RightButton)
                 Services.NotificationsService.discardNotification(notif.notificationId);
+
+            if (mouse.button === Qt.LeftButton) {
+                let command = [];
+                if (notif.notification.hints["sender-pid"])
+                    command = ["hyprctl", "dispatch", "focuswindow", `pid:${notif.notification.hints["sender-pid"]}`];
+                else
+                    command = ["hyprctl", "dispatch", "focuswindow", `class:${notif.notification.desktopEntry.toLowerCase()}`];
+                focusProcess.command = command;
+                focusProcess.running = true;
             }
+        }
+    }
+
+    Process {
+        id: focusProcess
+
+        running: false
+        onExited: (statusCode, status) => {
+            if (notif.notification.actions) {
+                let defaultAction = notif.notification.actions.filter((el) => {
+                    return el.identifier === 'default';
+                })[0];
+                if (defaultAction)
+                    defaultAction.invoke();
+
+            }
+        }
+    }
+
+    Timer {
+        interval: 100
+        running: !notificationNull && progress < 1
+        repeat: true
+        onTriggered: {
+            progress = calculateProgress();
+            if (progress >= 1 && notif)
+                Services.NotificationsService.discardNotification(notif.notificationId);
+
         }
     }
 
@@ -101,25 +147,25 @@ Rectangle {
     Column {
         id: column
 
-        spacing: 8
-        width: parent.width - 16
+        spacing: Globals.Sizes.notifProgressMarginBottom
+        width: parent.width - Globals.Sizes.notifProgressMargin
 
         anchors {
             top: parent.top
             left: parent.left
-            margins: 8
+            margins: Globals.Sizes.notifProgressMarginBottom
         }
 
         Row {
-            spacing: 8
-            height: 22
+            spacing: Globals.Sizes.notifProgressMarginBottom
+            height: Globals.Sizes.notifIconSquare
 
             Item {
                 id: iconContainer
 
                 anchors.verticalCenter: parent.verticalCenter
-                width: 22
-                height: 22
+                width: Globals.Sizes.notifIconSquare
+                height: Globals.Sizes.notifIconSquare
 
                 ClippingWrapperRectangle {
                     width: iconContainer.width
@@ -132,8 +178,8 @@ Rectangle {
 
                         anchors.fill: parent
                         source: iconSource
-                        sourceSize.width: 22 * 1.3
-                        sourceSize.height: 22 * 1.3
+                        sourceSize.width: Globals.Sizes.notifIconSquare * 1.3
+                        sourceSize.height: Globals.Sizes.notifIconSquare * 1.3
                         smooth: true
                         antialiasing: true
                         visible: status === Image.Ready && source !== ""
@@ -149,9 +195,7 @@ Rectangle {
                     anchors.fill: parent
                     radius: 6
                     visible: !iconImage.visible
-                    color: {
-                        return Globals.Colors.workspaceFallbackRect;
-                    }
+                    color: Globals.Colors.workspaceFallbackRect
                 }
 
                 Text {
@@ -160,7 +204,7 @@ Rectangle {
                     color: Globals.Colors.workspaceFallbackRectText
                     font.pixelSize: 10
                     visible: !notif.appIcon
-                    font.family: "FreeMono"
+                    font.family: "SF Pro Display"
                 }
 
             }
@@ -170,24 +214,25 @@ Rectangle {
                 anchors.verticalCenter: parent.verticalCenter
                 color: Globals.Colors.barElementTextColor
                 font.weight: Font.Bold
+                font.family: "SF Pro Display"
             }
 
         }
 
         Row {
             width: parent.width
-            spacing: 8
+            spacing: Globals.Sizes.notifProgressMarginBottom
 
             Item {
                 id: imageContainer
 
-                width: 22
-                height: 22
+                width: Globals.Sizes.notifIconSquare
+                height: Globals.Sizes.notifIconSquare
 
                 ClippingWrapperRectangle {
                     width: imageContainer.width
                     height: imageContainer.height
-                    radius: 22
+                    radius: Globals.Sizes.notifIconSquare
                     color: "transparent"
 
                     Image {
@@ -195,8 +240,8 @@ Rectangle {
 
                         anchors.fill: parent
                         source: notif.image
-                        sourceSize.width: 22 * 1.5
-                        sourceSize.height: 22 * 1.5
+                        sourceSize.width: Globals.Sizes.notifIconSquare * 1.5
+                        sourceSize.height: Globals.Sizes.notifIconSquare * 1.5
                         smooth: true
                         antialiasing: true
                         visible: status === Image.Ready && source !== ""
@@ -208,15 +253,17 @@ Rectangle {
             }
 
             Column {
-                width: parent.width
+                width: parent.width - imageContainer.width - parent.spacing
                 spacing: 4
+
                 Text {
-                    text: notif.summary + ":"
+                    text: notif.summary
                     color: Globals.Colors.barElementTextColor
                     width: parent.width
                     font.weight: Font.Bold
                     maximumLineCount: 1
                     elide: Text.ElideRight
+                    font.family: "SF Pro Display"
                 }
 
                 Text {
@@ -226,6 +273,43 @@ Rectangle {
                     wrapMode: Text.Wrap
                     maximumLineCount: 3
                     elide: Text.ElideRight
+                    font.family: "SF Pro Display"
+                }
+
+            }
+
+        }
+
+    }
+
+    Rectangle {
+        id: progressBar
+
+        width: parent.width
+        height: Globals.Sizes.notifProgressMarginBottom
+        color: "transparent"
+
+        anchors {
+            bottom: parent.bottom
+            left: parent.left
+            right: parent.right
+            bottomMargin: Globals.Sizes.notifProgressMarginBottom
+            leftMargin: Globals.Sizes.notifProgressMargin
+            rightMargin: Globals.Sizes.notifProgressMargin
+        }
+
+        Rectangle {
+            width: parent.width * (1 - progress)
+            height: Globals.Sizes.notifProgressHeight
+            radius: 4
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            color: Globals.Colors.barElementActiveBorderColor
+
+            Behavior on width {
+                NumberAnimation {
+                    duration: Globals.AnimationSpeeds.fastAnimation
+                    easing.type: Easing.Linear
                 }
 
             }

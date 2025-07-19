@@ -26,5 +26,12 @@ Singleton {
     readonly property int workspacesPadding: 6
     readonly property int workspacesDotSize: 6
 
-    readonly property int notificationsPanelWidth: 300
+    readonly property int notificationsPanelWidth: 300 + gapsOutHorizontal + 10
+    readonly property int notificationElementWidth: notificationsPanelWidth - gapsOutHorizontal - 10
+
+    // notifications
+    readonly property int notifIconSquare: 22
+    readonly property int notifProgressMargin: 16
+    readonly property int notifProgressMarginBottom: 16
+    readonly property int notifProgressHeight: 3
 }

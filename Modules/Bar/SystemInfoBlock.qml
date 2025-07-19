@@ -47,7 +47,7 @@ Rectangle {
             Text {
                 id: mainText
 
-                font.family: "FreeMono"
+                font.family: "SF Pro Display"
                 font.weight: Font.Bold
                 font.pixelSize: 14
                 text: root.mainText

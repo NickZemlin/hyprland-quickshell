@@ -106,11 +106,11 @@ Rectangle {
             to: "*"
 
             ColorAnimation {
-                duration: 150
+                duration: Globals.AnimationSpeeds.fastAnimation
             }
 
             NumberAnimation {
-                duration: 150
+                duration: Globals.AnimationSpeeds.fastAnimation
             }
 
         }
@@ -181,7 +181,7 @@ Rectangle {
                 font.pixelSize: 10
                 font.bold: isActive
                 visible: !biggestWindow
-                font.family: "FreeMono"
+                font.family: "SF Pro Display"
             }
 
         }
@@ -207,6 +207,7 @@ Rectangle {
             text: "+" + (numberOfChildren - 6).toString()
             color: Globals.Colors.workspaceNumberOfWindows
             font.pixelSize: 12
+            font.family: "SF Pro Display"
         }
 
     }
