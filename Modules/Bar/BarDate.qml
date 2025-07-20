@@ -35,7 +35,7 @@ Rectangle {
             to: "hovered"
 
             ColorAnimation {
-                duration: 300
+                duration: Globals.AnimationSpeeds.mediumAnimation
                 easing.type: Easing.InOutQuad
             }
 
@@ -45,7 +45,7 @@ Rectangle {
             to: "default"
 
             ColorAnimation {
-                duration: 300
+                duration: Globals.AnimationSpeeds.mediumAnimation
                 easing.type: Easing.InOutQuad
             }
 
@@ -65,7 +65,7 @@ Rectangle {
         padding: Globals.Sizes.barItemInnerPadding
 
         Text {
-            font.family: "FreeMono"
+            font.family: "SF Pro Display"
             font.weight: Font.Bold
             font.pixelSize: 14
             text: Qt.formatDateTime(clock.date, "hh:mm")
@@ -73,7 +73,7 @@ Rectangle {
         }
 
         Text {
-            font.family: "FreeMono"
+            font.family: "SF Pro Display"
             font.weight: Font.Bold
             font.pixelSize: 14
             text: "|"
@@ -81,7 +81,7 @@ Rectangle {
         }
 
         Text {
-            font.family: "FreeMono"
+            font.family: "SF Pro Display"
             font.weight: Font.Bold
             font.pixelSize: 14
             text: Qt.formatDateTime(clock.date, "dd MMM")

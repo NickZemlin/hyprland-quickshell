@@ -5,6 +5,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import Quickshell.Hyprland
+import "root:/Assets/Wallpapers" as Wallpapers
 
 Singleton {
     id: root
@@ -51,7 +52,7 @@ Singleton {
     Timer {
         id: refreshTimer
         interval: 1000  // Refresh every second
-        repeat: true
+        repeat: false
         onTriggered: {
             if (!getWorkspaces.running && !getActiveWorkspace.running && !getClients.running) {
                 updateAll();

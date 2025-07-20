@@ -30,10 +30,34 @@ Row {
         mainText: `${ramInfo.ramUsed.toFixed(1)} GB`
     }
 
-    // Swap Block
+    // SWAP block
     SystemInfoBlock {
+        id: swapBlock
+
+        property bool showSwap: ramInfo.swapUsed > 0
+
         iconText: "󰯎"
         mainText: `${ramInfo.swapUsed.toFixed(1)} GB`
+        width: showSwap ? implicitWidth : 0
+        opacity: showSwap ? 1 : 0
+        visible: width > 0
+
+        Behavior on width {
+            NumberAnimation {
+                duration: Globals.AnimationSpeeds.mediumAnimation
+                easing.type: Easing.OutCubic
+            }
+
+        }
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: Globals.AnimationSpeeds.mediumAnimation
+                easing.type: Easing.OutCubic
+            }
+
+        }
+
     }
 
     // CPU Block
