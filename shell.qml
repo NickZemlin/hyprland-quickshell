@@ -1,4 +1,5 @@
 import Quickshell
+import QtQuick
 
 import "root:/Modules/Bar" as Bar
 import "root:/Modules/Wallpaper" as Wallpaper

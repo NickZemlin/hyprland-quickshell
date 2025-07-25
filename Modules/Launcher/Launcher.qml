@@ -8,6 +8,9 @@ import "root:/Services" as Services
 Rectangle {
     id: root
 
+    property alias searchBar: internalSearchBar
+    property alias contentView: internalContentView
+
     width: Globals.Sizes.launcherMaxWidth
     height: Globals.Sizes.launcherMaxHeight
     color: 'transparent'
@@ -20,7 +23,9 @@ Rectangle {
 
         if (event.key === Qt.Key_Down)
             Services.LauncherService.moveDown();
-
+        if (event.key === Qt.Key_Escape){
+            Services.LauncherService.laucherPresented = false
+        }
     }
 
     Column {
@@ -28,6 +33,7 @@ Rectangle {
         spacing: 8
 
         SearchBar {
+            id: internalSearchBar
             anchors.horizontalCenter: parent.horizontalCenter
 
             border {
@@ -39,6 +45,7 @@ Rectangle {
         }
 
         ClippingRectangle {
+            id: internalContentView
             anchors.horizontalCenter: parent.horizontalCenter
             width: Globals.Sizes.launcherMaxWidth
             height: Math.min(listView.contentHeight, Globals.Sizes.launcherMaxHeight) // Bind to ListView's content height

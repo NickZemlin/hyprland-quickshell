@@ -38,6 +38,7 @@ Singleton {
 
     // Launcher
     readonly property int launcherInputHeight: 60
+    readonly property int launcherInputIconSquare: 30
     readonly property int laucnherYOffset: 100
     readonly property int launcherMaxWidth: 600
     readonly property int launcherMaxHeight: launcherMaxWidth - laucnherYOffset 

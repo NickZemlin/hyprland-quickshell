@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import Quickshell
 import Quickshell.Hyprland
+import Quickshell.Wayland
 import "root:/Globals" as Globals
 import "root:/Services" as Services
 
@@ -18,6 +19,7 @@ Scope {
         focusable: Services.LauncherService.laucherPresented
         aboveWindows: Services.LauncherService.laucherPresented
         exclusionMode: ExclusionMode.Ignore
+        WlrLayershell.keyboardFocus: Services.LauncherService.laucherPresented
 
         anchors {
             left: true
@@ -38,6 +40,7 @@ Scope {
 
         Launcher {
             id: launcher
+
             visible: Services.LauncherService.laucherPresented
 
             anchors {
@@ -49,7 +52,17 @@ Scope {
         }
 
         mask: Region {
-            item: launcher
+            // Start with an empty region (not including launcher)
+            Region {
+                item: launcher.searchBar
+                intersection: Intersection.Combine // Add searchBar to the clickable area
+            }
+
+            Region {
+                item: launcher.contentView
+                intersection: Intersection.Combine // Add contentView to the clickable area
+            }
+
         }
 
     }

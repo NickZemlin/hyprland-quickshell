@@ -10,8 +10,7 @@ Singleton {
     id: root
 
     property bool laucherPresented: false
-    readonly property string requiredText: "> "  
-    property string inputText: requiredText
+    property string inputText: ""
 
     property int selectedIndex: -1 // -1 вместо undefined, более явно, в рот ебал жизнь без опционалов
 
@@ -22,14 +21,11 @@ Singleton {
     }
 
     onInputTextChanged: {
-        if (inputText.slice(0, requiredText.length) !== requiredText.slice(0, requiredText.length)) {
-            laucherPresented = false
-        }
         searchEntries()
     }
 
     onLaucherPresentedChanged: {
-        inputText = requiredText
+        inputText = ""
         selectedIndex = laucherPresented ? 0 : -1
     }
 
@@ -43,7 +39,7 @@ Singleton {
         if (selectedIndex == 0){
             selectedIndex = list.count - 1
         } else {
-        selectedIndex--
+            selectedIndex--
         }
     }
 
@@ -69,10 +65,8 @@ Singleton {
 
     function searchEntries() {
         list.clear()
-        let cleanInput = inputText.slice(2)
-        if (!cleanInput.length) return
         
-        let result = Services.AppSearch.fuzzyQuery(cleanInput)
+        let result = Services.AppSearch.fuzzyQuery(inputText)
         
         for (let el of result) {
             const item = launcherItemComponent.createObject(root, {
