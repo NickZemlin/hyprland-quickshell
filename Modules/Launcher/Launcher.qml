@@ -48,10 +48,11 @@ Rectangle {
             id: internalContentView
             anchors.horizontalCenter: parent.horizontalCenter
             width: Globals.Sizes.launcherMaxWidth
-            height: Math.min(listView.contentHeight, Globals.Sizes.launcherMaxHeight) // Bind to ListView's content height
+            height: Globals.Sizes.launcherMaxHeight
             color: Globals.Colors.barElementBackground
             radius: Globals.Sizes.borderRadius
             clip: true
+            visible: Services.LauncherService.inputText
 
             border {
                 width: Globals.Sizes.borderWidth
@@ -61,37 +62,13 @@ Rectangle {
 
             ListView {
                 id: listView
-
-                highlightMoveDuration: 25
                 width: parent.width
-                height: Math.min(contentHeight, Globals.Sizes.launcherMaxHeight)
-                spacing: 2
+                height: Globals.Sizes.launcherMaxHeight
+                spacing: 0
+                topMargin: 8
                 model: Services.LauncherService.list
                 currentIndex: Services.LauncherService.selectedIndex
 
-                highlight: Component {
-                    Rectangle {
-                        color: "transparent"
-
-                        Rectangle {
-                            color: "transparent"
-                            width: Globals.Sizes.launcherInputHeight
-                            height: parent.height
-
-                            Text {
-                                text: ">"
-                                anchors.centerIn: parent
-                                font.pixelSize: 30
-                                color: Globals.Colors.barElementTextColor
-                                font.weight: Font.Bold
-                                font.family: "SF Pro Display"
-                            }
-
-                        }
-
-                    }
-
-                }
 
                 delegate: LauncherEntryView {
                     entry: modelData

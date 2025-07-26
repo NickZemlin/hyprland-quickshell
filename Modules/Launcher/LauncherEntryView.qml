@@ -17,97 +17,80 @@ Rectangle {
         return "";
     }
 
-    height: Globals.Sizes.launcherInputHeight
-    color: isSelectedItem ? "transparent" : "transparent"
+    height: 40
+    color: "transparent"
 
-    Row {
-        id: rootRow
+    Rectangle {
+        color: isSelectedItem ? Globals.Colors.barElementHoveredBorderColor : "transparent"
+        radius: 7
+        height: parent.height
+        anchors {
 
-        height: parent.height 
-        width: parent.width
-        spacing: 8
-        padding: 8 // TODO: disconnect horizontal and vertical
-        leftPadding: padding + (isSelectedItem ? Globals.Sizes.launcherInputHeight : 0) // adds 8 extra pixels when selected
+            fill: parent
+            leftMargin: 8
+            rightMargin: 8
+        }
 
-        Item {
-            id: iconContainer
+        Row {
+            id: rootRow
 
-            anchors.verticalCenter: parent.verticalCenter
-            width: 32
-            height: 32
+            height: parent.height
+            width: parent.width
+            spacing: 8
+            padding: 8 // TODO: disconnect horizontal and vertical
+            leftPadding: 8 // adds 8 extra pixels when selected
 
-            ClippingWrapperRectangle {
-                width: iconContainer.width
-                height: iconContainer.height
-                radius: 8
-                color: "transparent"
+            Item {
+                id: iconContainer
 
-                Image {
-                    id: iconImage
+                anchors.verticalCenter: parent.verticalCenter
+                width: 20
+                height: 20
 
+                ClippingWrapperRectangle {
+                    width: iconContainer.width
+                    height: iconContainer.height
+                    radius: 8
+                    color: "transparent"
+
+                    Image {
+                        id: iconImage
+
+                        anchors.fill: parent
+                        source: iconSource
+                        sourceSize.width: 20 * 1.3
+                        sourceSize.height: 20 * 1.3
+                        smooth: true
+                        visible: status === Image.Ready && source !== ""
+                        fillMode: Image.PreserveAspectFit
+                    }
+
+                }
+
+                Rectangle {
+                    id: fallbackRect
+
+                    anchors.margins: Globals.Sizes.borderWidth
                     anchors.fill: parent
-                    source: iconSource
-                    sourceSize.width: 32 * 1.3
-                    sourceSize.height: 32 * 1.3
-                    smooth: true
-                    visible: status === Image.Ready && source !== ""
-                    fillMode: Image.PreserveAspectFit
+                    radius: 6
+                    visible: !iconImage.visible
+                    color: Globals.Colors.workspaceFallbackRect
                 }
 
             }
 
-            Rectangle {
-                id: fallbackRect
 
-                anchors.margins: Globals.Sizes.borderWidth
-                anchors.fill: parent
-                radius: 6
-                visible: !iconImage.visible
-                color: Globals.Colors.workspaceFallbackRect
-            }
-
-            Text {
-                anchors.centerIn: parent
-                text: entry.title.toString()
-                color: Globals.Colors.workspaceFallbackRectText
-                font.pixelSize: 10
-                visible: !entry.iconString
-                font.family: "SF Pro Display"
-            }
-
-        }
-
-        Column {
-            anchors.verticalCenter: parent.verticalCenter
-
-            Text {
-                text: entry.title
-                color: Globals.Colors.barElementTextColor
-                width: parent.width
-                font.weight: Font.Bold
-                maximumLineCount: 1
-                elide: Text.ElideRight
-                font.family: "SF Pro Display"
-                font.pixelSize: 18
-            }
-
-            Text {
-                text: entry.subTitle
-                color: Globals.Colors.barElementTextColor
-                maximumLineCount: 1
-                elide: Text.ElideRight
-                font.family: "SF Pro Display"
-                font.pixelSize: 14
-                width: root.width - iconContainer.width - rootRow.padding - 10
-            }
-
-        }
-
-        Behavior on leftPadding {
-            NumberAnimation {
-                duration: 25 // Animation duration in milliseconds
-                easing.type: Easing.OutQuad // Smooth easing curve
-            }
+                Text {
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: entry.title
+                    color: Globals.Colors.barElementTextColor
+                    width: parent.width
+                    font.weight: Font.Bold
+                    maximumLineCount: 1
+                    elide: Text.ElideRight
+                    font.family: "SF Pro Display"
+                    font.pixelSize: 14
+                }
 
         }
 
