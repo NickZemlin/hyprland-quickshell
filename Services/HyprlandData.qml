@@ -6,6 +6,7 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Hyprland
 import "root:/Assets/Wallpapers" as Wallpapers
+import "root:/Services" as Services
 
 Singleton {
     id: root
@@ -81,6 +82,7 @@ Singleton {
                 event.name === "moveworkspace" ||
                 event.name === "workspacev2") {
                 root.updateWorkspaces();
+                // Services.LauncherService.laucherPresented = false
             }
             
             // Update config on reload event
